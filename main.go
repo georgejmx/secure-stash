@@ -1,17 +1,21 @@
 package main
 
 import (
+	"example/secure-stash/cli"
 	"example/secure-stash/manager"
 	"fmt"
 )
 
-const IV = "12345678901234567890123456789012"
-
 func main() {
-	manager.Init(IV)
+	password := cli.ScanPassword()
+	if ok := manager.Init(password); !ok {
+		cli.ShowLogin(false)
+		return
+	}
+	cli.ShowLogin(true)
+	
 	sampleKey := "keyw"
 	sampleVal := "valx"
-
 	err := manager.InsertEntry(sampleKey, sampleVal)
 	if err != nil {
 		panic("Unable to insert basic key")

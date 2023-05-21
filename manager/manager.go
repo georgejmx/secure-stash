@@ -13,9 +13,14 @@ var (
 /*
  * Initialise cache connection and encryption settings
  */
-func Init(seed string) {
+func Init(password string) bool {
 	c.InitCacher()
-	st.InitStasher(seed)
+	st.InitStasher(stasher.RawToHash(password))
+	if st.HasIntegrity(password) {
+		return true
+	}
+
+	return false
 }
 
 /*

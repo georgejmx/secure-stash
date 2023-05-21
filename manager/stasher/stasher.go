@@ -3,7 +3,9 @@ package stasher
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"errors"
+	"crypto/sha256"
+	"encoding/binary"
+	"math/rand"
 )
 
 type Stasher struct {
@@ -13,14 +15,10 @@ type Stasher struct {
 
 const NONCE_SIZE = 12
 
-func (st *Stasher) InitStasher(seed string) error {
-	if len(seed) != 32 {
-		return errors.New("initial seed not 32 characters long")
-	} else if NONCE_SIZE > 32 {
-		return errors.New("nonce size too large")
-	}
+func (st *Stasher) InitStasher(inputHash [32]byte) error {
+	nonce, seed := hashToSecrets(inputHash)
 
-	aesCipher, err := aes.NewCipher([]byte(seed))
+	aesCipher, err := aes.NewCipher(seed[:])
 	if err != nil {
 		return err
 	}
@@ -29,9 +27,42 @@ func (st *Stasher) InitStasher(seed string) error {
 	if err != nil {
 		return err
 	}
-	st.galoisNonce = []byte(seed[:NONCE_SIZE]) // TODO: change to an independent value
-
+	st.galoisNonce = nonce[:]
 	return nil
+}
+
+/*
+ * Generates two byte arrays, that correspond to a seed and nonce, from an input
+ * byte array. Note that this function is one-way reproducable and random
+ */
+ func hashToSecrets(hash [32]byte) ([NONCE_SIZE]byte, [32]byte) {
+	copy := hash
+	hashes := [2][32]byte{hash, copy}
+	derivedSeeds := [2]int64{int64(binary.BigEndian.Uint64(hash[0:16])), int64(binary.BigEndian.Uint64(hash[16:32]))}
+	
+	for i := 0; i < 2; i++ {
+		rand.Seed(int64(derivedSeeds[i]))
+		rand.Shuffle(32, func(x, y int){
+			hashes[i][x], hashes[i][y] = hashes[i][y], hashes[i][x]
+		})
+	}
+	return ([NONCE_SIZE]byte)(hashes[0][0:NONCE_SIZE]), hashes[1]
+}
+
+/*
+ * Converts a string password to hashed bytes
+ */
+ func RawToHash(raw string) [32]byte {
+	return sha256.Sum256([]byte(raw))
+}
+
+func (st *Stasher) HasIntegrity(validationString string) bool {
+	result, err := st.DecryptBytes(st.EncryptText(validationString))
+	if result != validationString || err != nil {
+		return false
+	}
+
+	return true
 }
 
 func (st *Stasher) EncryptText(plaintext string) []byte {
