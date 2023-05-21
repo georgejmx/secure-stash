@@ -20,12 +20,12 @@ func (c *Cacher) InitCacher() {
 	})
 }
 
-func (c *Cacher) InsertKey(key, val string) error {
+func (c *Cacher) InsertKey(key string, val []byte) error {
 	err := c.rcache.Set(c.ctx, key, val, 0).Err()
 	return err
 }
 
-func (c *Cacher) RetrieveKey(key string) (string, error) {
-	val, err := c.rcache.Get(c.ctx, key).Result()
+func (c *Cacher) RetrieveKey(key string) ([]byte, error) {
+	val, err := c.rcache.Get(c.ctx, key).Bytes()
 	return val, err
 }

@@ -1,28 +1,28 @@
 package main
 
 import (
-	"example/secure-stash/cacher"
+	"example/secure-stash/manager"
 	"fmt"
 )
 
-func main() {
-	c := cacher.Cacher{}
-	c.InitCacher()
+const IV = "12345678901234567890123456789012"
 
-	sampleKey := "keyx"
+func main() {
+	manager.Init(IV)
+	sampleKey := "keyw"
 	sampleVal := "valx"
 
-	err := c.InsertKey(sampleKey, sampleVal)
+	err := manager.InsertEntry(sampleKey, sampleVal)
 	if err != nil {
 		panic("Unable to insert basic key")
 	}
 	
-	val, err := c.RetrieveKey(sampleKey)
+	val, err := manager.RetrieveEntry(sampleKey)
 	if err != nil {
 		panic("Unable to get basic key")
 	} else if val != sampleVal {
 		panic("Unable to ensure consistent insert")
 	} else {
-		fmt.Println("Redis is working :)")
+		fmt.Println("Redis and GCM are working :)")
 	}
 }
