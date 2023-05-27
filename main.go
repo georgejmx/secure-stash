@@ -8,11 +8,11 @@ import (
 
 func main() {
 	password := cli.ScanPassword()
-	if ok := manager.Init(password); !ok {
-		cli.ShowLogin(false)
+	if ok, err := manager.Init(password); !ok {
+		cli.ShowLoginMessage(false, err.Error())
 		return
 	}
-	cli.ShowLogin(true)
+	cli.ShowLoginMessage(true, "")
 	
 	sampleKey := "keyw"
 	sampleVal := "valx"

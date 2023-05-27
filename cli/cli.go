@@ -18,10 +18,10 @@ func ScanPassword() string {
 	return password
 }
 
-func ShowLogin(ok bool) {
+func ShowLoginMessage(ok bool, errMsg string) {
 	if ok {
 		fmt.Printf("Successful login :)\n")
 	} else {
-		fmt.Printf("Unsuccessful login attempt:(\n")
+		fmt.Printf("Unsuccessful login attempt with error: %s\n", errMsg)
 	}
 }

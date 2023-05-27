@@ -6,6 +6,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+type CacherTemplate interface {
+	InitCacher()
+	InsertKey(key string, val []byte) error
+	DetermineIfExists(key string) (bool, error)
+	RetrieveEntry(key string) ([]byte, error)
+}
+
 type Cacher struct {
 	ctx context.Context
 	rcache *redis.Client
@@ -25,7 +32,20 @@ func (c *Cacher) InsertKey(key string, val []byte) error {
 	return err
 }
 
-func (c *Cacher) RetrieveKey(key string) ([]byte, error) {
+func (c *Cacher) DetermineIfExists(key string) (bool, error) {
+	result, err := c.rcache.Exists(c.ctx, key).Result()
+	if err != nil {
+		return false, err
+	}
+
+	if result == 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func (c *Cacher) RetrieveEntry(key string) ([]byte, error) {
 	val, err := c.rcache.Get(c.ctx, key).Bytes()
 	return val, err
 }

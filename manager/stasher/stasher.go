@@ -56,15 +56,6 @@ func (st *Stasher) InitStasher(inputHash [32]byte) error {
 	return sha256.Sum256([]byte(raw))
 }
 
-func (st *Stasher) HasIntegrity(validationString string) bool {
-	result, err := st.DecryptBytes(st.EncryptText(validationString))
-	if result != validationString || err != nil {
-		return false
-	}
-
-	return true
-}
-
 func (st *Stasher) EncryptText(plaintext string) []byte {
 	return st.galoisCipher.Seal(st.galoisNonce, st.galoisNonce, []byte(plaintext), nil)
 }
