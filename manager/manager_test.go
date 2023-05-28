@@ -4,17 +4,27 @@ import "testing"
 
 const TEST_PASSWORD = "something!secureY"
 
+
+/*
+ * Tests that initialising a new cache onto a redis instance that has already
+ * been setup with different encryption keys i.e. a different value of
+ * GENESIS_VAL will fail authentication. This corresponds to an invalid password
+ * login
+ */
 func TestInvalidPasswordFails(t *testing.T) {
 	c = &TestCacher{fresh: false}
 
 	ok, err := Init(TEST_PASSWORD)
 	if ok {
-		t.Fatal("Expected error error when initialising manager onto an existing encryption key")
+		t.Fatal("Success when initialising manager onto an existing encryption key")
 	} else if err.Error() != "cipher: message authentication failed" {
 		t.Error("Expected a decryption error however recieved different error")
 	}
 }
 
+/*
+ * Tests that a valid password login allows encryption and decryption of data
+ */
 func TestValidPasswordWorks(t *testing.T) {
 	c = &TestCacher{fresh: true}
 

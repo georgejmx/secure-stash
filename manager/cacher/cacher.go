@@ -32,6 +32,9 @@ func (c *Cacher) InsertKey(key string, val []byte) error {
 	return err
 }
 
+/**
+* Returns true if the specified key exists in Redis
+*/
 func (c *Cacher) DetermineIfExists(key string) (bool, error) {
 	result, err := c.rcache.Exists(c.ctx, key).Result()
 	if err != nil {

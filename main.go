@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+const APP_NAME = "secure-stash"
+
 func main() {
 	password := cli.ScanPassword()
 	if ok, err := manager.Init(password); !ok {
@@ -13,20 +15,26 @@ func main() {
 		return
 	}
 	cli.ShowLoginMessage(true, "")
+
+	// pivotNumber := cli.DetermineAction() // switch on this number below
 	
-	sampleKey := "keyw"
-	sampleVal := "valx"
-	err := manager.InsertEntry(sampleKey, sampleVal)
+	// INSERT ENTRY
+
+	key := "binance"; val := "valx44444m!" // TOGO
+	// key, val := cli.ReadInputAfterDisplaying(key, val string) {}
+	err := manager.InsertEntry(key, val)
 	if err != nil {
-		panic("Unable to insert basic key")
+		str := fmt.Sprintf("Unable to insert '%s' into '%s' ", key, APP_NAME)
+		panic(str)
 	}
 	
-	val, err := manager.RetrieveEntry(sampleKey)
+	// GET ENTRY
+
+	// key = cli.ReadKeyFromDisplay()
+	readValue, err := manager.RetrieveEntry(key)
 	if err != nil {
-		panic("Unable to get basic key")
-	} else if val != sampleVal {
-		panic("Unable to ensure consistent insert")
-	} else {
-		fmt.Println("Redis and GCM are working :)")
+		panic("Error when retrieving value")
 	}
+	// cli.WriteValueToDisplay(readValue)
+	fmt.Printf("%s has been retrieved from database\n", readValue)
 }
