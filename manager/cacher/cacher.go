@@ -19,6 +19,7 @@ type Cacher struct {
 	rcache *redis.Client
 }
 
+// Initialise program connection to redis
 func (c *Cacher) InitCacher() {
 	c.ctx = context.Background()
 	c.rcache = redis.NewClient(&redis.Options{
@@ -28,6 +29,13 @@ func (c *Cacher) InitCacher() {
 	})
 }
 
+// Retrieves all entry keys from redis
+func (c *Cacher) RetrieveEntries() ([]string, error) {
+	cmd := c.rcache.Do(c.ctx, "KEYS", "*")
+	return cmd.StringSlice()
+}
+
+// Add a new value to redis
 func (c *Cacher) InsertKey(key string, val []byte) error {
 	err := c.rcache.Set(c.ctx, key, val, 0).Err()
 	return err
@@ -47,12 +55,8 @@ func (c *Cacher) DetermineIfExists(key string) (bool, error) {
 	return true, nil
 }
 
+// Retrieve an entry from redis
 func (c *Cacher) RetrieveEntry(key string) ([]byte, error) {
 	val, err := c.rcache.Get(c.ctx, key).Bytes()
 	return val, err
-}
-
-func (c *Cacher) RetrieveEntries() ([]string, error) {
-	cmd := c.rcache.Do(c.ctx, "KEYS", "*")
-	return cmd.StringSlice()
 }

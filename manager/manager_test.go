@@ -4,7 +4,6 @@ import "testing"
 
 const TEST_PASSWORD = "something!secureY"
 
-
 // Tests that initialising a new cache onto a redis instance that has already
 // been setup with different encryption keys i.e. a different value of
 // GENESIS_VAL will fail authentication. This corresponds to an invalid password

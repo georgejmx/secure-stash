@@ -3,7 +3,6 @@ package stasher
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/sha256"
 	"encoding/binary"
 	"math/rand"
 )
@@ -15,6 +14,8 @@ type Stasher struct {
 
 const NONCE_SIZE = 12
 
+// Initialise a stasher object derived from the input hash to perform later
+// encryption and decryption using this hash
 func (st *Stasher) InitStasher(inputHash [32]byte) error {
 	nonce, seed := hashToSecrets(inputHash)
 
@@ -47,16 +48,12 @@ func (st *Stasher) InitStasher(inputHash [32]byte) error {
 	return ([NONCE_SIZE]byte)(hashes[0][0:NONCE_SIZE]), hashes[1]
 }
 
-
-// Converts a string password to hashed bytes
- func RawToHash(raw string) [32]byte {
-	return sha256.Sum256([]byte(raw))
-}
-
+// Perform encryption of plaintext to encrypted bytes
 func (st *Stasher) EncryptText(plaintext string) []byte {
 	return st.galoisCipher.Seal(st.galoisNonce, st.galoisNonce, []byte(plaintext), nil)
 }
 
+// Perform decryption of encrypted bytes to plaintext
 func (st *Stasher) DecryptBytes(blob []byte) (string, error) {
 	nonce, ciphertext := blob[:NONCE_SIZE], blob[NONCE_SIZE:]
 	plaintext, err := st.galoisCipher.Open(nil, nonce, ciphertext, nil)

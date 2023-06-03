@@ -4,6 +4,7 @@ import (
 	"errors"
 	"example/secure-stash/manager/cacher"
 	"example/secure-stash/manager/stasher"
+	"example/secure-stash/manager/utils"
 )
 
 const (
@@ -17,10 +18,22 @@ var (
 	isSetup bool = false
 )
 
-// Initialise cache connection and encryption settings and genesis
+// Validate an established password using the genesis key value pair to test
+// decryption
+func isPasswordEstablished() (bool, error) {
+	entry, err := RetrieveEntry(GENESIS_KEY)
+	if err != nil || entry != GENESIS_VAL {
+		return false, err
+	}
+	return true, nil
+}
+
+// Initialise cache connection and encryption settings and genesis. Returns an
+// error if the integrity of the cache cannot be established e.g. the genesis
+// pair cannot be retrieved or decryption of the gensis value fails
 func Init(password string) (bool, error) {
 	c.InitCacher()
-	hashedPassword := stasher.RawToHash(password)
+	hashedPassword := utils.RawToHash(password)
 	st.InitStasher(hashedPassword)
 
 	isSetup, err := c.DetermineIfExists(GENESIS_KEY)
@@ -37,12 +50,14 @@ func Init(password string) (bool, error) {
 	return true, nil
 }
 
-func isPasswordEstablished() (bool, error) {
-	entry, err := RetrieveEntry(GENESIS_KEY)
-	if err != nil || entry != GENESIS_VAL {
-		return false, err
+// Retrieve all keys in the cache
+func RetrieveEntries() ([]string, error) {
+	keys, err := c.RetrieveEntries()
+	if err != nil {
+		return nil, err
 	}
-	return true, nil
+
+	return utils.Remove(keys, GENESIS_KEY), nil
 }
 
 // Encrypt then insert entry into redis cache
@@ -69,9 +84,4 @@ func RetrieveEntry(key string) (string, error) {
 	}
 
 	return unstashedValue, nil
-}
-
-// Retrieve all keys in the cache
-func RetrieveEntries() ([]string, error) {
-	return c.RetrieveEntries()
 }

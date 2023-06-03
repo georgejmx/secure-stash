@@ -3,12 +3,13 @@ package main
 import (
 	"example/secure-stash/cli"
 	"example/secure-stash/manager"
-	"fmt"
+	"os"
 )
 
 const APP_NAME = "secure-stash"
 
 func main() {
+	var err error
 	password := cli.ScanPassword()
 	if ok, err := manager.Init(password); !ok {
 		cli.ShowLoginMessage(false, err.Error())
@@ -16,32 +17,34 @@ func main() {
 	}
 	cli.ShowLoginMessage(true, "")
 
-	// pivotNumber := cli.DetermineAction() // switch on this number below
-	
-	// INSERT ENTRY
-
-	key := "coinbase"; val := "valy44444m!" // TOGO
-	// key, val := cli.ReadInputAfterDisplaying(key, val string) {}
-	err := manager.InsertEntry(key, val)
-	if err != nil {
-		str := fmt.Sprintf("Unable to insert '%s' into '%s' ", key, APP_NAME)
-		panic(str)
-	}
-	
-	// GET ENTRY
-
-	// key = cli.ReadKeyFromDisplay()
-	readValue, err := manager.RetrieveEntry(key)
-	if err != nil {
-		panic("Error when retrieving value")
-	}
-	// cli.WriteValueToDisplay(readValue)
-	fmt.Printf("%s has been retrieved from database\n", readValue)
-
-	// GET KEYS
 	keys, err := manager.RetrieveEntries()
 	if err != nil {
-		panic(err.Error())
+		panic("Fatal: Unable to retrieve entries from cache")
 	}
-	fmt.Println(keys)
+	cli.ShowCurrentEntries(keys)
+
+	for true {
+		pivotRune := cli.DetermineAction()
+		if pivotRune == "Z" || pivotRune == "z" {
+			os.Exit(0)
+		} else if pivotRune == "A" || pivotRune == "a" {
+			key := cli.ParseKeyToView()
+			readValue, err := manager.RetrieveEntry(key)
+			if err == nil {
+				cli.ShowRetrieveEntrySuccess(key, readValue)
+			} else {
+				cli.ShowInvalidKeyScreen(key)
+			}
+		} else if pivotRune == "B" || pivotRune == "b" {
+			newKey, newVal := cli.ParseNewEntry()
+			err = manager.InsertEntry(newKey, newVal)
+			if err == nil {
+				cli.ShowAddEntrySuccess(newKey)
+			} else {
+				cli.ShowInvalidEntryScreen()
+			}
+		} else {
+			cli.ShowInvalidActionScreen()
+		}
+	}
 }

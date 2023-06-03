@@ -1,6 +1,7 @@
 package stasher
 
 import (
+	"example/secure-stash/manager/utils"
 	"testing"
 )
 
@@ -8,6 +9,7 @@ const TEST_PASSWORD = "something!secureY"
 
 var validEntries = []string{"tootatabah, Testing123!", "somethingreallyreallyreallyreallyreallyreallylong", "{\"phrases\":[\"foo\",\"bar\"]}", "som3_rAndom_password"}
 
+// Asserts that the nonce size specified is valid
 func TestCorrectNonceSize(t *testing.T) {
 	if NONCE_SIZE <= 0 || NONCE_SIZE > 32 {
 		t.Fatal("Incorrect nonce size constant set")
@@ -25,9 +27,10 @@ func stashEncryptsString(stash Stasher, inputString string) (bool, error) {
 	return true, nil
 }
 
+// Validates AES integrity on test cases
 func TestValidStashing(t *testing.T) {
 	testStasher := Stasher{}
-	testStasher.InitStasher(RawToHash(TEST_PASSWORD))
+	testStasher.InitStasher(utils.RawToHash(TEST_PASSWORD))
 
 	for _, entry := range validEntries {
 		ok, err := stashEncryptsString(testStasher, entry)
