@@ -17,9 +17,7 @@ var (
 	isSetup bool = false
 )
 
-/*
- * Initialise cache connection and encryption settings and genesis
- */
+// Initialise cache connection and encryption settings and genesis
 func Init(password string) (bool, error) {
 	c.InitCacher()
 	hashedPassword := stasher.RawToHash(password)
@@ -47,9 +45,7 @@ func isPasswordEstablished() (bool, error) {
 	return true, nil
 }
 
-/*
- * Encrypt then insert entry into redis cache
- */
+// Encrypt then insert entry into redis cache
 func InsertEntry(key, value string) error {
 	if isSetup && key == GENESIS_KEY {
 		return errors.New("Cannot use the reserved key: " + GENESIS_KEY)
@@ -60,9 +56,7 @@ func InsertEntry(key, value string) error {
 	return err
 }
 
-/*
- * Decrypt then return an entry from redis cache
- */
+// Decrypt then return an entry from redis cache
 func RetrieveEntry(key string) (string, error) {
 	stashedValue, err := c.RetrieveEntry(key)
 	if err != nil {
@@ -75,4 +69,9 @@ func RetrieveEntry(key string) (string, error) {
 	}
 
 	return unstashedValue, nil
+}
+
+// Retrieve all keys in the cache
+func RetrieveEntries() ([]string, error) {
+	return c.RetrieveEntries()
 }

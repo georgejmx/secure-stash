@@ -14,10 +14,8 @@ func TestCorrectNonceSize(t *testing.T) {
 	}
 }
 
-/*
- * Performs encryption and decryption of a input string; throwing an error
- * in the case of a mismatch
- */
+// Performs encryption and decryption of a input string; throwing an error
+// in the case of a mismatch
 func stashEncryptsString(stash Stasher, inputString string) (bool, error) {
 	result, err := stash.DecryptBytes(stash.EncryptText(inputString))
 	if err != nil || result != inputString  {

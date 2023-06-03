@@ -20,7 +20,7 @@ func main() {
 	
 	// INSERT ENTRY
 
-	key := "binance"; val := "valx44444m!" // TOGO
+	key := "coinbase"; val := "valy44444m!" // TOGO
 	// key, val := cli.ReadInputAfterDisplaying(key, val string) {}
 	err := manager.InsertEntry(key, val)
 	if err != nil {
@@ -37,4 +37,11 @@ func main() {
 	}
 	// cli.WriteValueToDisplay(readValue)
 	fmt.Printf("%s has been retrieved from database\n", readValue)
+
+	// GET KEYS
+	keys, err := manager.RetrieveEntries()
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println(keys)
 }

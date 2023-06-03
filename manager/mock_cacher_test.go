@@ -43,3 +43,7 @@ func (tc *TestCacher) RetrieveEntry(key string) ([]byte, error) {
 		return []byte(""), errors.New("Key does not exist")
 	}
 }
+
+func (tc *TestCacher) RetrieveEntries() ([]string, error) {
+	return []string{}, nil
+}

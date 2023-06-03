@@ -31,10 +31,8 @@ func (st *Stasher) InitStasher(inputHash [32]byte) error {
 	return nil
 }
 
-/*
- * Generates two byte arrays, that correspond to a seed and nonce, from an input
- * byte array. Note that this function is one-way reproducable and random
- */
+// Generates two byte arrays, that correspond to a seed and nonce, from an input
+// byte array. Note that this function is one-way reproducable and random
  func hashToSecrets(hash [32]byte) ([NONCE_SIZE]byte, [32]byte) {
 	copy := hash
 	hashes := [2][32]byte{hash, copy}
@@ -49,9 +47,8 @@ func (st *Stasher) InitStasher(inputHash [32]byte) error {
 	return ([NONCE_SIZE]byte)(hashes[0][0:NONCE_SIZE]), hashes[1]
 }
 
-/*
- * Converts a string password to hashed bytes
- */
+
+// Converts a string password to hashed bytes
  func RawToHash(raw string) [32]byte {
 	return sha256.Sum256([]byte(raw))
 }

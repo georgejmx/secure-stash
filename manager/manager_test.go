@@ -5,12 +5,10 @@ import "testing"
 const TEST_PASSWORD = "something!secureY"
 
 
-/*
- * Tests that initialising a new cache onto a redis instance that has already
- * been setup with different encryption keys i.e. a different value of
- * GENESIS_VAL will fail authentication. This corresponds to an invalid password
- * login
- */
+// Tests that initialising a new cache onto a redis instance that has already
+// been setup with different encryption keys i.e. a different value of
+// GENESIS_VAL will fail authentication. This corresponds to an invalid password
+// login
 func TestInvalidPasswordFails(t *testing.T) {
 	c = &TestCacher{fresh: false}
 
@@ -22,9 +20,7 @@ func TestInvalidPasswordFails(t *testing.T) {
 	}
 }
 
-/*
- * Tests that a valid password login allows encryption and decryption of data
- */
+// Tests that a valid password login allows encryption and decryption of data
 func TestValidPasswordWorks(t *testing.T) {
 	c = &TestCacher{fresh: true}
 
