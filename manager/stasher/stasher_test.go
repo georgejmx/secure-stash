@@ -41,3 +41,24 @@ func TestValidStashing(t *testing.T) {
 		}
 	}
 }
+
+// Checks that hash to secrets reproducibly produces outputs
+func TestReproducibleInitialisation(t *testing.T) {
+	testCases := [2][32]byte{ utils.RawToHash("test1"), utils.RawToHash("test2")}
+
+	testSeed, testNonce := hashToSecrets(testCases[0])
+	if len(testSeed) != NONCE_SIZE || len(testNonce) != 32 {
+		t.Fatal("Unexpected output when generating seed")
+	}
+
+
+	testSeed2, testNonce2 := hashToSecrets(testCases[0])
+	if testSeed != testSeed2 || testNonce != testNonce2 {
+		t.Error("Generating encryption seeds is not reproducible")
+	}
+
+	testDifferentSeed, testDifferentNonce := hashToSecrets(testCases[1])
+	if testSeed == testDifferentSeed || testNonce == testDifferentNonce {
+		t.Error("Generating encryption seeds produces constant output")
+	}
+}
