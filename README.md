@@ -8,7 +8,8 @@ _Requires go1.20 and redis installed_
 
 ### Development
 
-- `docker run -d -p 6379:6379 redis` to spin up a dev cache
+- Run `echo 'REDIS_PASSWORD=examplepass\nREDIS_PORT=5680' > .env` to initialise the app in dev mode
+- `docker run -d -p 6380:6379 redis` to spin up a dev cache
 - `make run-source` build and run source code
 
 ### Production
