@@ -4,13 +4,25 @@ import (
 	"example/secure-stash/cli"
 	"example/secure-stash/manager"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 const APP_NAME = "secure-stash"
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		panic("Fatal: Could not load .env file")
+	}
+	runCli()
+}
+
+// Run an interactive cli that calls the manager package to manipulate encrypted
+// values stored in redis 
+func runCli() {
 	var err error
-	password := cli.ScanPassword()
+	password := cli.ScanPassword(APP_NAME)
 	if ok, err := manager.Init(password); !ok {
 		cli.ShowLoginMessage(false, err.Error())
 		return

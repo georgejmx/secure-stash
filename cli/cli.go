@@ -5,13 +5,15 @@ import (
 	"strings"
 )
 
-func ScanPassword() string {
+func ScanPassword(appName string) string {
 	var password string
 	fmt.Printf(strings.Repeat("*", 40) + "\n")
-	fmt.Printf("************* Secure Stash *************\n")
+	fmt.Printf("************* ")
+	fmt.Printf(appName)
+	fmt.Printf(" *************\n")
 	fmt.Printf(strings.Repeat("*", 40) + "\n")
 	fmt.Printf(strings.Repeat(" ", 40) + "\n")
-	fmt.Printf("Type a password to unlock: ")
+	fmt.Printf("Type a password to initialise or unlock: ")
 	fmt.Scanln(&password)
 	fmt.Printf("\nUnlocking..\n")
 	fmt.Printf("\n")

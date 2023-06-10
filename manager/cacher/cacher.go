@@ -2,6 +2,7 @@ package cacher
 
 import (
 	"context"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -23,8 +24,8 @@ type Cacher struct {
 func (c *Cacher) InitCacher() {
 	c.ctx = context.Background()
 	c.rcache = redis.NewClient(&redis.Options{
-		Addr:	  "localhost:6379",
-		Password: "",
+		Addr:	  "localhost:" + os.Getenv("REDIS_PORT"),
+		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:		  0,  // use default DB
 	})
 }
