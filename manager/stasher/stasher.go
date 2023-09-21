@@ -8,7 +8,7 @@ import (
 )
 
 type Stasher struct {
-	galoisNonce []byte
+	galoisNonce  []byte
 	galoisCipher cipher.AEAD
 }
 
@@ -34,18 +34,22 @@ func (st *Stasher) InitStasher(inputHash [32]byte) error {
 
 // Generates two byte arrays, that correspond to a seed and nonce, from an input
 // byte array. Note that this function is one-way reproducable and random
- func hashToSecrets(hash [32]byte) ([NONCE_SIZE]byte, [32]byte) {
+func hashToSecrets(hash [32]byte) ([NONCE_SIZE]byte, [32]byte) {
 	copy := hash
 	hashes := [2][32]byte{hash, copy}
-	derivedSeeds := [2]int64{int64(binary.BigEndian.Uint64(hash[0:16])), int64(binary.BigEndian.Uint64(hash[16:32]))}
-	
+	derivedSeeds := [2]int64{
+		int64(binary.BigEndian.Uint64(hash[0:16])),
+		int64(binary.BigEndian.Uint64(hash[16:32])),
+	}
+
 	for i := 0; i < 2; i++ {
 		rand.Seed(int64(derivedSeeds[i]))
-		rand.Shuffle(32, func(x, y int){
+		rand.Shuffle(32, func(x, y int) {
 			hashes[i][x], hashes[i][y] = hashes[i][y], hashes[i][x]
 		})
 	}
-	return ([NONCE_SIZE]byte)(hashes[0][0:NONCE_SIZE]), hashes[1]
+	fixedSeedReference := (*[NONCE_SIZE]byte)(hashes[0][0:NONCE_SIZE])
+	return *fixedSeedReference, hashes[1]
 }
 
 // Perform encryption of plaintext to encrypted bytes
