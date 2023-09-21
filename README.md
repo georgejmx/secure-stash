@@ -4,7 +4,7 @@ Encrypted key value store for secure information
 
 ## Build and Run
 
-_Requires go1.20 and redis installed_
+_Requires go at the version in `go.mod` and redis version 7.* installed_
 
 ### Development
 
@@ -16,9 +16,14 @@ _Requires go1.20 and redis installed_
 
 #### Initial Setup
 
-1. Ensure that redis is installed and running locally on your computer
-   - On _macOS_; `brew install redis`. Then add a password to the _/opt/homebrew/etc/redis.conf_ file on your system by running `echo 'requirepass examplepass' >> redis.conf`. Now run `brew services start redis`
-   - Corresponding steps exist for _linux_ and _windows_
+##### Linux
+
+1. Set up Redis locally on your system following [this guide](https://linuxhint.com/install-configure-redis-ubuntu-22-04/)
+2. Set environment variables in this directory with the above password and the default redis port; `echo 'REDIS_PASSWORD=examplepass\nREDIS_PORT=6379' > .env`
+
+##### Mac
+
+1. Ensure that redis is installed and running locally on your computer by first executing `brew install redis`. Then add a password to the _/opt/homebrew/etc/redis.conf_ file on your system by running `echo 'requirepass examplepass' >> redis.conf`. Now run `brew services start redis`
 2. Set environment variables in this directory with the above password and the default redis port; `echo 'REDIS_PASSWORD=examplepass\nREDIS_PORT=5679' > .env`
 
 #### Start program
